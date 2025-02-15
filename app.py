@@ -6,13 +6,32 @@ from dotenv import load_dotenv
 import os
 
 
-def get_api_key(env_file_path: str) -> str:
+def get_env_data(env_file_path: str, required_data: str) -> str:
     load_dotenv(dotenv_path=env_file_path)
-    return os.getenv("API_KEY")
+    return os.getenv(required_data)
 
-API_KEY = get_api_key(".env")	# Your API_KEY here
+def prepare_request(api_req):
+    prepared = api_req.prepare()
+    s = requests.Session()
+    response = s.send(prepared)
+    json_result = json.loads(response.text)
+    print(response.status_code)
+    return json_result
+
+
+PLANETNET_API_KEY = get_env_data(".env", "PLANETNET_API_KEY")	# Your API_KEY here
+PERMAPEOPLE_API_KEY_ID = get_env_data(".env", "PERMAPEOPLE_API_KEY_ID")
+PERMAPEOPLE_API_KEY_SECRET = get_env_data(".env", "PERMAPEOPLE_API_KEY_SECRET")
+
 PROJECT = "all"  # try specific floras: "weurope", "canada"…
-api_endpoint = f"https://my-api.plantnet.org/v2/identify/{PROJECT}?api-key={API_KEY}"
+planenet_api_endpoint = f"https://my-api.plantnet.org/v2/identify/{PROJECT}?api-key={PLANETNET_API_KEY}&lang=he"
+permapeople_api_endpoint = "https://permapeople.org/api/search"
+
+permapeople_headers = {
+    "Content-Type": "application/json",
+    "x-permapeople-key-id": PERMAPEOPLE_API_KEY_ID,
+    "x-permapeople-key-secret": PERMAPEOPLE_API_KEY_SECRET
+}
 
 image_path_1 = "static/flower1.jpg"
 image_data_1 = open(image_path_1, 'rb')
@@ -36,12 +55,29 @@ files = [
 
 ]
 
-req = requests.Request('POST', url=api_endpoint, files=files, data=data)
-prepared = req.prepare()
+plant_ml_req = requests.Request('POST', url=planenet_api_endpoint, files=files, data=data)
+plant_ml_data = prepare_request(plant_ml_req)
+plant_data = plant_ml_data['results'][3]['species']
+local_name = plant_data['commonNames'][1]
+scientific_name = plant_data['scientificNameWithoutAuthor']
 
-s = requests.Session()
-response = s.send(prepared)
-json_result = json.loads(response.text)
+print(scientific_name)
+print(local_name)
 
-pprint(response.status_code)
-pprint(json_result)
+permapeople_payload = {
+    "q": scientific_name
+}
+
+permapeople_data = json.dumps(permapeople_payload)
+permapeople_req = requests.Request('POST', url=permapeople_api_endpoint, headers=permapeople_headers, data=permapeople_data)
+permapeople_result = prepare_request(permapeople_req)
+
+edible = permapeople_result['plants'][0]['data'][1].values()
+edible_parts = permapeople_result['plants'][0]['data'][10].values()
+
+print(edible)
+print(edible_parts)
+
+
+
+
