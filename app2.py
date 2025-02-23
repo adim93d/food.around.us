@@ -57,26 +57,29 @@ files = [
 
 plant_ml_req = requests.Request('POST', url=planenet_api_endpoint, files=files, data=data)
 plant_ml_data = prepare_request(plant_ml_req)
-plant_data = plant_ml_data['results'][3]['species']
-local_name = plant_data['commonNames'][1]
-scientific_name = plant_data['scientificNameWithoutAuthor']
+pprint(plant_ml_data)
 
-print(scientific_name)
-print(local_name)
 
-permapeople_payload = {
-    "q": scientific_name
-}
-
-permapeople_data = json.dumps(permapeople_payload)
-permapeople_req = requests.Request('POST', url=permapeople_api_endpoint, headers=permapeople_headers, data=permapeople_data)
-permapeople_result = prepare_request(permapeople_req)
-
-edible = permapeople_result['plants'][0]['data'][1].values()
-edible_parts = permapeople_result['plants'][0]['data'][10].values()
-
-print(edible)
-print(edible_parts)
+# plant_data = plant_ml_data['results'][3]['species']
+# local_name = plant_data['commonNames'][1]
+# scientific_name = plant_data['scientificNameWithoutAuthor']
+#
+# print(scientific_name)
+# print(local_name)
+#
+# permapeople_payload = {
+#     "q": scientific_name
+# }
+#
+# permapeople_data = json.dumps(permapeople_payload)
+# permapeople_req = requests.Request('POST', url=permapeople_api_endpoint, headers=permapeople_headers, data=permapeople_data)
+# permapeople_result = prepare_request(permapeople_req)
+#
+# edible = permapeople_result['plants'][0]['data'][1].values()
+# edible_parts = permapeople_result['plants'][0]['data'][10].values()
+#
+# print(edible)
+# print(edible_parts)
 
 
 

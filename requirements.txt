@@ -1,4 +1,7 @@
 requests
-json
-pprint
 python-dotenv
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+email-validator
