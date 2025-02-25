@@ -23,8 +23,7 @@ PLANETNET_API_KEY = get_env_data(".env", "PLANETNET_API_KEY")	# Your API_KEY her
 PERMAPEOPLE_API_KEY_ID = get_env_data(".env", "PERMAPEOPLE_API_KEY_ID")
 PERMAPEOPLE_API_KEY_SECRET = get_env_data(".env", "PERMAPEOPLE_API_KEY_SECRET")
 
-PROJECT = "all"  # try specific floras: "weurope", "canada"…
-planenet_api_endpoint = f"https://my-api.plantnet.org/v2/identify/{PROJECT}?api-key={PLANETNET_API_KEY}&lang=he"
+planenet_api_endpoint = f"https://my-api.plantnet.org/v2/identify/all?api-key={PLANETNET_API_KEY}&lang=he"
 permapeople_api_endpoint = "https://permapeople.org/api/search"
 
 permapeople_headers = {
@@ -59,12 +58,10 @@ plant_ml_req = requests.Request('POST', url=planenet_api_endpoint, files=files, 
 plant_ml_data = prepare_request(plant_ml_req)
 pprint(plant_ml_data)
 
-
-# plant_data = plant_ml_data['results'][3]['species']
+plant_data = plant_ml_data['results'][3]['species']
 # local_name = plant_data['commonNames'][1]
-# scientific_name = plant_data['scientificNameWithoutAuthor']
-#
-# print(scientific_name)
+scientific_name = plant_data['scientificNameWithoutAuthor']
+print(scientific_name)
 # print(local_name)
 #
 # permapeople_payload = {

@@ -1,10 +1,18 @@
 # main.py
+import os
+import json
+import requests
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
-
+from dotenv import load_dotenv
 from database import SessionLocal, engine
 import models, schemas
+from pprint import pprint
+load_dotenv()
+PLANETNET_API_KEY = os.getenv("PLANETNET_API_KEY")
+planenet_api_endpoint = f"https://my-api.plantnet.org/v2/identify/all?api-key={PLANETNET_API_KEY}&lang=he"
+
 
 # Create tables if they do not exist
 models.Base.metadata.create_all(bind=engine)
@@ -126,3 +134,46 @@ def delete_plant(plant_id: int, db: Session = Depends(get_db)):
     db.delete(plant)
     db.commit()
     return {"detail": "Plant deleted successfully"}
+
+
+# 3rd Party API for plant recognition
+def prepare_request(api_req):
+    prepared = api_req.prepare()
+    s = requests.Session()
+    response = s.send(prepared)
+    json_result = json.loads(response.text)
+    print(response.status_code)
+    return json_result
+
+
+image_path_1 = "static/flower1.jpg"
+image_data_1 = open(image_path_1, 'rb')
+
+image_path_2 = "static/leaf1.jpg"
+image_data_2 = open(image_path_2, 'rb')
+
+image_path_3 = "static/leaf2.jpg"
+image_data_3 = open(image_path_3, 'rb')
+
+image_path_4 = "static/leaf3.jpg"
+image_data_4 = open(image_path_4, 'rb')
+
+data = { 'organs': ['flower', 'leaf', 'leaf', 'leaf'] }
+
+files = [
+  ('images', (image_path_1, image_data_1)),
+  ('images', (image_path_2, image_data_2)),
+  ('images', (image_path_3, image_data_3)),
+  ('images', (image_path_4, image_data_4)),
+
+]
+
+plant_ml_req = requests.Request('POST', url=planenet_api_endpoint, files=files, data=data)
+plant_ml_data = prepare_request(plant_ml_req)
+pprint(plant_ml_data)
+plant_data = plant_ml_data['results'][3]['species']
+scientific_name = plant_data['scientificNameWithoutAuthor']
+plant_family = plant_data['family']["scientificNameWithoutAuthor"]
+
+print(scientific_name)
+print(plant_family)
