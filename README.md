@@ -1,9 +1,9 @@
-# 🌿 Plant Identifier Web App
+# 🌿 Food.Around.Us - Food Identifier Web App
 
-Welcome to the **Plant Identifier Web App**! This application allows users to upload 1-5 images of a plant and receive information about its name, edibility, and how to prepare it for consumption.
+Welcome to **Food.Around.Us - Plant Identifier Web App**! This application allows users to upload 1-5 images of a plant and receive information about its name, edibility, and how to prepare it for consumption. Our cause is food security, we will have many updates with new features and improvments over time 
 
----
-
+`This web app is for educational purposes only.It is in the early stages of development and testing and should not be considered a reliable source for plant identification or edibility validation. Always consult a qualified professional before consuming any plant
+`
 ## 🚀 Features
 - 📷 Upload 1-5 images of a plant
 - 🌱 Identify the plant species
@@ -49,8 +49,8 @@ Welcome to the **Plant Identifier Web App**! This application allows users to up
 ## 📦 Installation & Setup
 ### **1️⃣ Clone the Repository**
 ```sh
-git clone https://github.com/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/adim93d/food.around.us.git
+cd food.around.us
 ```
 
 ### **2️⃣ Set Up Environment Variables**
@@ -112,7 +112,7 @@ Once the app is running, you can access the interactive API documentation at:
 ---
 
 ## 🤝 Contributing
-We welcome contributions! Feel free to submit an issue or a pull request.
+We welcome Donations! Feel free to submit a request. or contact us at food.around.us@pm.me
 
 ---
 
@@ -121,4 +121,4 @@ This project is licensed under the MIT License.
 
 ---
 
-🌱 **Happy Plant Identifying!** 🌿
+🌱 **Happy Plant Identifying! Food.Around.Us** 🌿
