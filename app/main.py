@@ -1,11 +1,9 @@
 # main.py
 from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy.orm import Session
-from typing import List
+
 from dotenv import load_dotenv
 from app.database.database import SessionLocal, engine
 from app.database.database import Base
-# from database.schemas
 from app.api.routers import plant_routes, user_routes
 
 load_dotenv()
@@ -25,14 +23,6 @@ tags_metadata = [
 ]
 
 app = FastAPI(openapi_tags=tags_metadata)
+
 app.include_router(plant_routes.router, prefix="/plants", tags=["Plants"])
 app.include_router(user_routes.router, prefix="/users", tags=["Users"])
-
-# # Dependency to get a DB session
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-

@@ -8,21 +8,6 @@ from ...database.database import Base
 from ...database.schemas import UserCreate, UserResponse
 
 load_dotenv()
-#
-# # Create tables if they do not exist
-# Base.metadata.create_all(bind=engine)
-
-# tags_metadata = [
-#     {
-#         "name": "Users",
-#         "description": "CRUD Operations related to users."
-#     },
-#     {
-#         "name": "Plants",
-#         "description": "CRUD Operations related to plants."
-#     }
-# ]
-
 router = APIRouter()
 
 # Dependency to get a DB session
