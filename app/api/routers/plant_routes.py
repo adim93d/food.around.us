@@ -35,7 +35,7 @@ def get_db():
 
 
 # Create plant
-@router.post("/plants/", response_model=PlantResponse, tags=["Plants"])
+@router.post("/", response_model=PlantResponse, tags=["Plants"])
 def create_plant(plant: PlantCreate, db: Session = Depends(get_db)):
     db_plant = db.query(Plant).filter(Plant.scientific_name == plant.scientific_name).first()
     if db_plant:
@@ -47,13 +47,13 @@ def create_plant(plant: PlantCreate, db: Session = Depends(get_db)):
     return new_plant
 
 # READ all plants
-@router.get("/plants/", response_model=List[PlantResponse], tags=["Plants"])
+@router.get("/", response_model=List[PlantResponse], tags=["Plants"])
 def read_plants(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     plants = db.query(Plant).offset(skip).limit(limit).all()
     return plants
 
 # READ a single plant by ID
-@router.get("/plants/{plant_id}", response_model=PlantResponse, tags=["Plants"])
+@router.get("/{plant_id}", response_model=PlantResponse, tags=["Plants"])
 def read_plant(plant_id: int, db: Session = Depends(get_db)):
     plant = db.query(Plant).filter(Plant.id == plant_id).first()
     if not plant:
@@ -61,7 +61,7 @@ def read_plant(plant_id: int, db: Session = Depends(get_db)):
     return plant
 
 # UPDATE plant
-@router.put("/plants/{plant_id}", response_model=PlantResponse, tags=["Plants"])
+@router.put("/{plant_id}", response_model=PlantResponse, tags=["Plants"])
 def update_plant(plant_id: int, plant: PlantCreate, db: Session = Depends(get_db)):
     db_plant = db.query(Plant).filter(Plant.id == plant_id).first()
     if not db_plant:
@@ -74,7 +74,7 @@ def update_plant(plant_id: int, plant: PlantCreate, db: Session = Depends(get_db
     return db_plant
 
 # DELETE user
-@router.delete("/plants/{plant_id}", tags=["Plants"])
+@router.delete("/{plant_id}", tags=["Plants"])
 def delete_plant(plant_id: int, db: Session = Depends(get_db)):
     plant = db.query(Plant).filter(Plant.id == plant_id).first()
     if not plant:

@@ -19,7 +19,7 @@ def get_db():
         db.close()
 
 # CREATE user
-@router.post("/users/", response_model=UserResponse, tags=["Users"])
+@router.post("/", response_model=UserResponse, tags=["Users"])
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.email == user.email).first()
     if db_user:
@@ -31,13 +31,13 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 # READ all users
-@router.get("/users/", response_model=List[UserResponse], tags=["Users"])
+@router.get("/", response_model=List[UserResponse], tags=["Users"])
 def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     users = db.query(User).offset(skip).limit(limit).all()
     return users
 
 # READ a single user by ID
-@router.get("/users/{user_id}", response_model=UserResponse, tags=["Users"])
+@router.get("/{user_id}", response_model=UserResponse, tags=["Users"])
 def read_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -45,7 +45,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 # UPDATE user
-@router.put("/users/{user_id}", response_model=UserResponse, tags=["Users"])
+@router.put("/{user_id}", response_model=UserResponse, tags=["Users"])
 def update_user(user_id: int, user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
@@ -57,7 +57,7 @@ def update_user(user_id: int, user: UserCreate, db: Session = Depends(get_db)):
     return db_user
 
 # DELETE user
-@router.delete("/users/{user_id}", tags=["Users"])
+@router.delete("/{user_id}", tags=["Users"])
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
