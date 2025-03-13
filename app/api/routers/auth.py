@@ -1,4 +1,3 @@
-# app/api/routers/auth.py
 import os
 from datetime import datetime, timedelta
 from typing import Optional
@@ -20,12 +19,12 @@ load_dotenv()
 
 # Configuration for JWT – change SECRET_KEY to a secure value in production!
 SECRET_KEY = os.getenv("SECRET_KEY")  # Change this to your production secret key!
-ALGORITHM = "HS256"
+ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 router = APIRouter(tags=["Auth"])
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 def get_db():
     db = SessionLocal()
@@ -34,11 +33,14 @@ def get_db():
     finally:
         db.close()
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
+
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
@@ -50,6 +52,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 def authenticate_user(db: Session, email: str, password: str):
     user = db.query(User).filter(User.email == email).first()
     if not user:
@@ -57,6 +60,7 @@ def authenticate_user(db: Session, email: str, password: str):
     if not verify_password(password, user.password):
         return False
     return user
+
 
 @router.post("/signup", response_model=UserResponse, tags=["Auth"])
 def signup(user: UserCreate, db: Session = Depends(get_db)):
