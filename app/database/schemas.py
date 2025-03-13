@@ -1,4 +1,3 @@
-# schemas.py
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 
@@ -28,10 +27,11 @@ class PlantResponse(BaseModel):
     family: str
     is_edible: bool
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 class TokenData(BaseModel):
     email: Optional[str] = None
-

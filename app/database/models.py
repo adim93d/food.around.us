@@ -1,6 +1,6 @@
-# models.py
 from sqlalchemy import Column, Integer, String, Boolean, ColumnElement
 from app.database.database import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -15,5 +15,3 @@ class Plant(Base):
     scientific_name = Column(String, unique=True, index=True, nullable=False)
     family = Column(String, index=True, nullable=False)
     is_edible = Column(Boolean, index=True, nullable=False)
-
-

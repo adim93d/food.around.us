@@ -1,29 +1,18 @@
-from fastapi import APIRouter, FastAPI, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from dotenv import load_dotenv
+
 from app.database.models import Plant
-from app.database.database import Base
-from app.database.database import SessionLocal, engine
+from app.database.database import Base, SessionLocal, engine
 from app.database.schemas import PlantCreate, PlantResponse
+from app.api.routers.auth import get_current_user
 
 load_dotenv()
 
-# Create tables if they do not exist
-Base.metadata.create_all(bind=engine)
+# All endpoints in this router require authentication
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
-tags_metadata = [
-    {
-        "name": "Users",
-        "description": "CRUD Operations related to users."
-    },
-    {
-        "name": "Plants",
-        "description": "CRUD Operations related to plants."
-    }
-]
-router = APIRouter()
-app = FastAPI(openapi_tags=tags_metadata)
 
 # Dependency to get a DB session
 def get_db():
@@ -46,11 +35,13 @@ def create_plant(plant: PlantCreate, db: Session = Depends(get_db)):
     db.refresh(new_plant)
     return new_plant
 
+
 # READ all plants
 @router.get("/", response_model=List[PlantResponse], tags=["Plants"])
 def read_plants(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     plants = db.query(Plant).offset(skip).limit(limit).all()
     return plants
+
 
 # READ a single plant by ID
 @router.get("/{plant_id}", response_model=PlantResponse, tags=["Plants"])
@@ -59,6 +50,7 @@ def read_plant(plant_id: int, db: Session = Depends(get_db)):
     if not plant:
         raise HTTPException(status_code=404, detail="Plant not found")
     return plant
+
 
 # UPDATE plant
 @router.put("/{plant_id}", response_model=PlantResponse, tags=["Plants"])
@@ -72,6 +64,7 @@ def update_plant(plant_id: int, plant: PlantCreate, db: Session = Depends(get_db
     db.commit()
     db.refresh(db_plant)
     return db_plant
+
 
 # DELETE user
 @router.delete("/{plant_id}", tags=["Plants"])
