@@ -15,3 +15,10 @@ class Plant(Base):
     scientific_name = Column(String, unique=True, index=True, nullable=False)
     family = Column(String, index=True, nullable=False)
     is_edible = Column(Boolean, index=True, nullable=False)
+
+
+class Recipe(Base):
+    __tablename__ = "recipes"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    content = Column(String, unique=True, index=True, nullable=False)

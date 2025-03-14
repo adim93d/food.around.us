@@ -28,6 +28,17 @@ class PlantResponse(BaseModel):
     is_edible: bool
 
 
+class RecipeCreate(BaseModel):
+    name: str
+    content: str
+
+
+class RecipeResponse(BaseModel):
+    id : int
+    name : str
+    content: str
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
