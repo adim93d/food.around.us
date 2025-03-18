@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import datetime
 
 
 class UserCreate(BaseModel):
@@ -26,6 +27,26 @@ class PlantResponse(BaseModel):
     scientific_name : str
     family: str
     is_edible: bool
+
+
+class UserPlantCreate(BaseModel):
+    user_id: int
+    plant_id: int
+    image: Optional[str] = None
+    date: Optional[datetime] = None
+    description: Optional[str] = None
+
+
+class UserPlantResponse(BaseModel):
+    id: int
+    user_id: int
+    plant_id: int
+    image: Optional[str]
+    date: datetime
+    description: Optional[str]
+
+    class Config:
+        orm_mode = True  # Allow Pydantic to work with SQLAlchemy models
 
 
 class RecipeCreate(BaseModel):
