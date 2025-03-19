@@ -4,12 +4,13 @@ import requests
 import os
 from dotenv import load_dotenv
 from app.api.routers.auth import get_current_user
+from app.services.ollama_service import check_if_edible
 
 load_dotenv()
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
-API_KEY = os.getenv("PLANETNET_API_KEY")  # Add this in your .env file
+API_KEY = os.getenv("PLANETNET_API_KEY")
 PROJECT = "all"
 API_ENDPOINT = f"https://my-api.plantnet.org/v2/identify/{PROJECT}?api-key={API_KEY}"
 
@@ -35,14 +36,19 @@ async def identify_plant(
             raise HTTPException(status_code=response.status_code, detail="Failed to identify plant")
 
         result = response.json()
+
         if not result.get('results'):
             raise ValueError("No identification results found.")
 
         top_result = result['results'][0]
         species_name = top_result['species']['scientificNameWithoutAuthor']
         family_name = top_result['species']['family']['scientificNameWithoutAuthor']
-
-        return species_name, family_name
+        is_edible = check_if_edible(species_name)
+        return {
+            "species_name": species_name,
+            "family_name": family_name,
+            "is_edible": is_edible
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
