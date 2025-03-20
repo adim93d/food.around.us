@@ -46,7 +46,7 @@ class UserPlantResponse(BaseModel):
     description: Optional[str]
 
     class Config:
-        orm_mode = True  # Allow Pydantic to work with SQLAlchemy models
+        from_attributes = True
 
 
 class RecipeCreate(BaseModel):

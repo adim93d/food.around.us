@@ -43,11 +43,11 @@ async def identify_plant(
         top_result = result['results'][0]
         species_name = top_result['species']['scientificNameWithoutAuthor']
         family_name = top_result['species']['family']['scientificNameWithoutAuthor']
-        is_edible = check_if_edible(species_name)
+        # is_edible = check_if_edible(species_name)
         return {
             "species_name": species_name,
-            "family_name": family_name,
-            "is_edible": is_edible
+            "family_name": family_name
+            # "is_edible": is_edible
         }
 
     except Exception as e:

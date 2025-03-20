@@ -28,5 +28,4 @@ def check_if_edible(species_name: str) -> bool:
 
     except Exception as e:
         print(f"Ollama check failed: {str(e)}")
-        # Default to False if something goes wrong
         return False

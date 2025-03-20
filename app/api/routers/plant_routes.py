@@ -10,7 +10,6 @@ from app.api.routers.auth import get_current_user
 
 load_dotenv()
 
-# All endpoints in this router require authentication
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 

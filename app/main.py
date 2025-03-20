@@ -18,6 +18,10 @@ tags_metadata = [
         "description": "CRUD Operations related to users."
     },
     {
+        "name": "Identify",
+        "description": "Operations related to identifying plants."
+    },
+    {
         "name": "Plants",
         "description": "CRUD Operations related to plants."
     },
