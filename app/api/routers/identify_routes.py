@@ -4,7 +4,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from app.api.routers.auth import get_current_user
-from app.services.ai_service import get_plant_info
+from app.services.ai_service import get_detailed_plant_info
 
 load_dotenv()
 
@@ -43,9 +43,12 @@ async def identify_plant(
         top_result = result['results'][0]
         species_name = top_result['species']['scientificNameWithoutAuthor']
         family_name = top_result['species']['family']['scientificNameWithoutAuthor']
-        is_edible = get_plant_info(species_name)
+        plant_info = get_detailed_plant_info(species_name)
+        is_edible = plant_info.get("edible")
+        edible_parts = plant_info.get("edible_parts")
+        safety = plant_info.get("safety")
 
-        return {"species_name": species_name, "family_name": family_name, "is_edible": is_edible}
+        return {"species_name": species_name, "family_name": family_name, "is_edible": is_edible, "edible_parts": edible_parts, "safety": safety}
 
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Request error: {str(e)}")
