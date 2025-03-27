@@ -139,8 +139,6 @@ def get_detailed_plant_info(scientific_name: str) -> dict:
 
 if __name__ == "__main__":
     try:
-        # simple_result = get_plant_edibility("Malva sylvestris")
-        # print("Is edible:", simple_result)
 
         detailed_result = get_detailed_plant_info("Malva sylvestris")
         print("\nDetailed Info:")

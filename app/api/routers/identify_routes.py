@@ -37,6 +37,7 @@ async def identify_plant(
             raise HTTPException(status_code=response.status_code, detail=error_detail)
 
         result = response.json()
+        print(result)
         if not result.get('results'):
             raise HTTPException(status_code=404, detail="No identification results found.")
 
