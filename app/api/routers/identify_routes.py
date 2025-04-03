@@ -5,7 +5,6 @@ import os
 from dotenv import load_dotenv
 from io import BytesIO
 from app.api.routers.auth import get_current_user
-from app.services.ai_service import get_detailed_plant_info
 
 load_dotenv()
 
@@ -14,6 +13,8 @@ API_KEY = os.getenv("PLANETNET_API_KEY")
 PROJECT = "all"
 API_ENDPOINT = f"https://my-api.plantnet.org/v2/identify/{PROJECT}?api-key={API_KEY}"
 
+# Maximum allowed file size in bytes (50 MB)
+MAX_FILE_SIZE = 52428800
 
 @router.post("/", tags=["Identify"])
 async def identify_plant(
@@ -25,18 +26,17 @@ async def identify_plant(
 
     files = []
     for image in images:
-        # Validate that the file type is acceptable per the PlantNet API docs.
+        # Validate that the file type is acceptable.
         if image.content_type not in ("image/jpeg", "image/png"):
             raise HTTPException(status_code=400, detail="Unsupported file type. Only JPEG and PNG are allowed.")
 
-        # Read the file contents
         contents = await image.read()
 
-        # (Optional) Check file size here if the API restricts the size, e.g.:
-        # if len(contents) > MAX_FILE_SIZE:
-        #     raise HTTPException(status_code=400, detail="File size exceeds allowed limit.")
+        # Check that the file does not exceed the maximum allowed size.
+        if len(contents) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=400, detail="File size exceeds allowed limit of 50MB.")
 
-        # Wrap the bytes in a BytesIO object so requests can correctly encode it
+        # Wrap the bytes in a BytesIO object so requests can correctly encode it.
         files.append(('images', (image.filename, BytesIO(contents), image.content_type)))
 
     data = [('organs', organ) for organ in organs]
@@ -54,18 +54,10 @@ async def identify_plant(
         top_result = result['results'][0]
         species_name = top_result['species']['scientificNameWithoutAuthor']
         family_name = top_result['species']['family']['scientificNameWithoutAuthor']
-        #
-        # plant_info = get_detailed_plant_info(species_name)
-        # is_edible = plant_info.get("edible")
-        # edible_parts = plant_info.get("edible_parts")
-        # safety = plant_info.get("safety")
 
         return {
             "species_name": species_name,
             "family_name": family_name,
-            # "is_edible": is_edible,
-            # "edible_parts": edible_parts,
-            # "safety": safety
         }
 
     except requests.exceptions.RequestException as e:
