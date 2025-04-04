@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from app.database.database import engine
 from app.database.database import Base
-from app.api.routers import plant_routes, user_routes, user_plants_routes, auth, recipe_routes, identify_routes
+from app.api.routers import plant_routes, user_routes, user_plants_routes, auth, recipe_routes, identify_routes, scan_routes
 
 
 load_dotenv()
@@ -48,6 +48,7 @@ def healthcheck():
 
 # API routes
 app.include_router(identify_routes.router, prefix="/identify", tags=["Identify"])
+app.include_router(scan_routes.router, prefix="/scan", tags=["Scan"])
 app.include_router(plant_routes.router, prefix="/plants", tags=["Plants"])
 app.include_router(user_routes.router, prefix="/users", tags=["Users"])
 app.include_router(user_plants_routes.router, prefix="/user_plants", tags=["User-Plants"])

@@ -70,20 +70,7 @@ def get_plant_edibility(scientific_name: str) -> dict:
 def get_detailed_plant_info(scientific_name: str) -> dict:
     """
     Determines plant information by calling the OpenAI API using function calling.
-
-    The function returns a dictionary with the following keys:
-      - edible (bool): True if the plant is edible, otherwise False.
-      - edible_parts (list): A list of edible parts of the plant.
-      - safety (str): Preparation and safety considerations for consuming the plant.
-
-    Args:
-        scientific_name (str): The scientific name of the plant.
-
-    Returns:
-        dict: A dictionary containing the plant information.
-
-    Raises:
-        Exception: If the API call fails or no function call is returned.
+    Returns a dictionary with keys: 'edible', 'edible_parts', and 'safety'.
     """
     prompt = (
         f"Is the plant {scientific_name} edible? If edible, provide the response in a JSON object with the keys "
@@ -122,17 +109,26 @@ def get_detailed_plant_info(scientific_name: str) -> dict:
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4-0613",  # Use a model that supports function calling
+            model="gpt-4-0613",  # Use a model that supports function calling.
             messages=messages,
             functions=functions,
             function_call="auto"
         )
-        function_response = response.choices[0].message.function_call
-        if function_response:
-            arguments = json.loads(function_response.arguments)
+        message = response.choices[0].message
+
+        # If a function call is returned, parse its arguments.
+        if message.get("function_call"):
+            arguments = json.loads(message.function_call.arguments)
             return arguments
+        # Otherwise, if plain content is returned, try to parse that as JSON.
+        elif message.get("content"):
+            try:
+                arguments = json.loads(message.content)
+                return arguments
+            except Exception as e:
+                raise Exception(f"Could not parse message content as JSON: {e}")
         else:
-            raise Exception("No function call returned from the API response.")
+            raise Exception("No function call or content returned from the API response.")
     except Exception as e:
         raise Exception(f"Error when calling OpenAI API: {e}")
 
