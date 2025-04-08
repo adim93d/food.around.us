@@ -54,11 +54,57 @@ async def identify_plant(
         top_result = result['results'][0]
         species_name = top_result['species']['scientificNameWithoutAuthor']
         family_name = top_result['species']['family']['scientificNameWithoutAuthor']
+        common_names = top_result['species']['commonNames']
+
 
         return {
             "species_name": species_name,
             "family_name": family_name,
+            "common_names": common_names
         }
+
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Request error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+
+
+@router.post("/all-info", tags=["Identify"])
+async def get_all_info(
+        organs: Annotated[List[str], Form(...)],
+        images: Annotated[List[UploadFile], File(...)]
+):
+    if not images:
+        raise HTTPException(status_code=400, detail="No images provided")
+
+    files = []
+    for image in images:
+        # Validate that the file type is acceptable.
+        if image.content_type not in ("image/jpeg", "image/png"):
+            raise HTTPException(status_code=400, detail="Unsupported file type. Only JPEG and PNG are allowed.")
+
+        contents = await image.read()
+
+        # Check that the file does not exceed the maximum allowed size.
+        if len(contents) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=400, detail="File size exceeds allowed limit of 50MB.")
+
+        # Wrap the bytes in a BytesIO object so requests can correctly encode it.
+        files.append(('images', (image.filename, BytesIO(contents), image.content_type)))
+
+    data = [('organs', organ) for organ in organs]
+
+    try:
+        response = requests.post(API_ENDPOINT, files=files, data=data)
+        if response.status_code != 200:
+            error_detail = f"PlantNet API error {response.status_code}: {response.text}"
+            raise HTTPException(status_code=response.status_code, detail=error_detail)
+
+        all_result = response.json()
+        if not all_result.get('results'):
+            raise HTTPException(status_code=404, detail="No identification results found.")
+
+        return all_result
 
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Request error: {str(e)}")

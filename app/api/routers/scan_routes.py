@@ -15,6 +15,7 @@ async def scan_and_ai(
     plant_info = await identify_plant(organs, images)
     scientific_name = plant_info.get("species_name")
     family_name = plant_info.get("family_name")
+    common_names = plant_info.get("common_names")
     if not scientific_name:
         raise HTTPException(
             status_code=500,
@@ -30,7 +31,9 @@ async def scan_and_ai(
     return {
         "Scientific name: ": scientific_name,
         "Family name: ": family_name,
+        "Common names: ": common_names,
         "Edible: ": is_edible,
         "Edible parts: ": edible_parts,
         "Safety: ": safety
     }
+
