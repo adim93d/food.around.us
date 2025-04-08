@@ -117,11 +117,11 @@ def get_detailed_plant_info(scientific_name: str) -> dict:
         message = response.choices[0].message
 
         # If a function call is returned, parse its arguments.
-        if message.get("function_call"):
+        if message.function_call:
             arguments = json.loads(message.function_call.arguments)
             return arguments
         # Otherwise, if plain content is returned, try to parse that as JSON.
-        elif message.get("content"):
+        elif message.content:
             try:
                 arguments = json.loads(message.content)
                 return arguments
