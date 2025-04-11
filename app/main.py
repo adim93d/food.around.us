@@ -45,7 +45,7 @@ app = FastAPI(openapi_tags=tags_metadata)
 
 @app.get("/")
 def healthcheck():
-    return f"FastAPI is up and running"
+    return f"FastAPI is up and running!"
 
 # API routes
 app.include_router(identify_routes.router, prefix="/identify", tags=["Identify"])
