@@ -1,3 +1,4 @@
+# app/services/ai_service.py
 import os
 import json
 from dotenv import load_dotenv
@@ -8,29 +9,12 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def get_plant_edibility(scientific_name: str) -> dict:
-    """
-    Determines plant information by calling the OpenAI API using function calling.
-
-    The function returns a dictionary with the following key:
-      - is_edible (bool): True if the plant is edible, otherwise False.
-
-    Args:
-        scientific_name (str): The scientific name of the plant.
-
-    Returns:
-        dict: A dictionary containing the plant information.
-
-    Raises:
-        Exception: If the API call fails or no function call is returned.
-    """
     prompt = (
         f"Is the plant {scientific_name} edible? If edible, provide the response in a JSON object with the key "
         "'is_edible'."
     )
 
-    messages = [
-        {"role": "user", "content": prompt}
-    ]
+    messages = [{"role": "user", "content": prompt}]
 
     functions = [
         {
@@ -51,14 +35,13 @@ def get_plant_edibility(scientific_name: str) -> dict:
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4-0613",  # Ensure you use a model that supports function calling
+            model="gpt-4-0613",
             messages=messages,
             functions=functions,
             function_call="auto"
         )
         function_response = response.choices[0].message.function_call
         if function_response:
-            # Use dot notation to access the 'arguments' attribute
             arguments = json.loads(function_response.arguments)
             return arguments.get('is_edible')
         else:
@@ -68,18 +51,12 @@ def get_plant_edibility(scientific_name: str) -> dict:
 
 
 def get_detailed_plant_info(scientific_name: str) -> dict:
-    """
-    Determines plant information by calling the OpenAI API using function calling.
-    Returns a dictionary with keys: 'edible', 'edible_parts', and 'safety'.
-    """
     prompt = (
         f"Is the plant {scientific_name} edible? If edible, provide the response in a JSON object with the keys "
         "'edible', 'edible_parts', and 'safety'."
     )
 
-    messages = [
-        {"role": "user", "content": prompt}
-    ]
+    messages = [{"role": "user", "content": prompt}]
 
     functions = [
         {
@@ -109,18 +86,16 @@ def get_detailed_plant_info(scientific_name: str) -> dict:
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4-0613",  # Use a model that supports function calling.
+            model="gpt-4-0613",
             messages=messages,
             functions=functions,
             function_call="auto"
         )
         message = response.choices[0].message
 
-        # If a function call is returned, parse its arguments.
         if message.function_call:
             arguments = json.loads(message.function_call.arguments)
             return arguments
-        # Otherwise, if plain content is returned, try to parse that as JSON.
         elif message.content:
             try:
                 arguments = json.loads(message.content)
@@ -135,7 +110,6 @@ def get_detailed_plant_info(scientific_name: str) -> dict:
 
 if __name__ == "__main__":
     try:
-
         detailed_result = get_detailed_plant_info("Malva sylvestris")
         print("\nDetailed Info:")
         print("Edible:", detailed_result.get("edible"))

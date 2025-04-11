@@ -1,7 +1,7 @@
+# app/database/schemas.py
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
-
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -16,17 +16,27 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
+# For plant creation, edible_parts and safety are optional.
 class PlantCreate(BaseModel):
-    scientific_name : str
+    scientific_name: str
     family: str
     is_edible: bool
+    edible_parts: Optional[List[str]] = None
+    safety: Optional[str] = None
 
 
+# For plant response, include the fields with appropriate types.
 class PlantResponse(BaseModel):
-    id : int
-    scientific_name : str
+    id: int
+    scientific_name: str
     family: str
     is_edible: bool
+    edible_parts: Optional[List[str]] = None
+    safety: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 
 class UserPlantCreate(BaseModel):
@@ -55,8 +65,8 @@ class RecipeCreate(BaseModel):
 
 
 class RecipeResponse(BaseModel):
-    id : int
-    name : str
+    id: int
+    name: str
     content: str
 
 

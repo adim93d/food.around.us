@@ -9,6 +9,7 @@ from app.api.routers import plant_routes, user_routes, user_plants_routes, auth,
 
 load_dotenv()
 
+Base.metadata.drop_all(bind=engine)
 # Create tables if they do not exist
 Base.metadata.create_all(bind=engine)
 
