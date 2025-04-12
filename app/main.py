@@ -2,9 +2,19 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 import logging
 from contextlib import asynccontextmanager
-from app.database.database import engine, Base
-from app.api.routers import plant_routes, user_routes, user_plants_routes, auth, recipe_routes, identify_routes, scan_routes
 import os
+
+from app.database.database import engine, Base
+from app.api.routers import (
+    plant_routes,
+    user_routes,
+    user_plants_routes,
+    auth,
+    recipe_routes,
+    identify_routes,
+    scan_routes
+)
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -34,6 +44,15 @@ async def lifespan(app: FastAPI):
     logger.info("FastAPI is shutting down...")
 
 app = FastAPI(openapi_tags=tags_metadata, lifespan=lifespan)
+
+# Add CORS middleware to allow requests from your v0.dev front end.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://v0-food-around-us.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def healthcheck():
