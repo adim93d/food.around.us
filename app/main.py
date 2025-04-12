@@ -17,9 +17,9 @@ from app.api.routers import (
 load_dotenv()
 
 # WARNING: Remove or conditionally execute drop_all in production environments.
-Base.metadata.drop_all(bind=engine)
-# Create tables if they do not exist
-Base.metadata.create_all(bind=engine)
+# Base.metadata.drop_all(bind=engine)
+# # Create tables if they do not exist
+# Base.metadata.create_all(bind=engine)
 
 tags_metadata = [
     {"name": "Users", "description": "CRUD Operations related to users."},
