@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from dotenv import load_dotenv
-import logging
-from contextlib import asynccontextmanager
+# import logging
+# from contextlib import asynccontextmanager
 
 from app.database.database import engine, Base
 from app.api.routers import (
@@ -29,17 +29,17 @@ tags_metadata = [
     {"name": "Recipes", "description": "CRUD Operations related to recipes."},
     {"name": "Auth", "description": "Auth related Operations"}
 ]
+#
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
+#
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     logger.info("FastAPI is starting up...")
+#     yield
+#     logger.info("FastAPI is shutting down...")
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    logger.info("FastAPI is starting up...")
-    yield
-    logger.info("FastAPI is shutting down...")
-
-app = FastAPI(openapi_tags=tags_metadata, lifespan=lifespan)
+app = FastAPI(openapi_tags=tags_metadata)
 
 @app.get("/")
 def healthcheck():
