@@ -48,16 +48,30 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(openapi_tags=tags_metadata, lifespan=lifespan)
 
-# Add CORS middleware to allow requests from your v0.dev front end.
+# # Add CORS middleware to allow requests from your v0.dev front end.
+# app.add_middleware(
+#     CORSMiddleware,
+#     # allow_origins=[
+#     #     "https://v0-food-around-us.vercel.app",
+#     #     "https://v0-food-around-us.vercel.app/",
+#     #     "https://v0-food-around-us.vercel.app/scan/",
+#     #     "https://v0-food-around-us.vercel.app/scan",
+#     # ],
+#     allow_origin=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+#     expose_headers=["*"],
+# )
+
+# Correct CORS setup — only one allow_origins, include all your front-end URLs (and localhost for testing)
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=[
-    #     "https://v0-food-around-us.vercel.app",
-    #     "https://v0-food-around-us.vercel.app/",
-    #     "https://v0-food-around-us.vercel.app/scan/",
-    #     "https://v0-food-around-us.vercel.app/scan",
-    # ],
-    allow_origin=["*"],
+    allow_origins=[
+        "https://v0-food-around-us.vercel.app",
+        "https://food-around-us.vercel.app",
+        "http://localhost:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
