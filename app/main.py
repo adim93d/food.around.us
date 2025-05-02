@@ -51,12 +51,13 @@ app = FastAPI(openapi_tags=tags_metadata, lifespan=lifespan)
 # Add CORS middleware to allow requests from your v0.dev front end.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://v0-food-around-us.vercel.app",
-        "https://v0-food-around-us.vercel.app/",
-        "https://v0-food-around-us.vercel.app/scan/",
-        "https://v0-food-around-us.vercel.app/scan",
-    ],
+    # allow_origins=[
+    #     "https://v0-food-around-us.vercel.app",
+    #     "https://v0-food-around-us.vercel.app/",
+    #     "https://v0-food-around-us.vercel.app/scan/",
+    #     "https://v0-food-around-us.vercel.app/scan",
+    # ],
+    allow_origin=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
