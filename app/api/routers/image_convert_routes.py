@@ -8,28 +8,46 @@ from app.api.routers.auth import get_current_user
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
-async def convert_images_for_plantnet(images: List[UploadFile]) -> List[UploadFile]:
+class ConvertedImage:
     """
-    Convert uploaded images to JPEG RGB format as required by the PlantNet API.
-    Mutates each UploadFile in-place (file buffer, filename, content_type).
+    A minimal stand-in for UploadFile that holds JPEG bytes,
+    plus filename and content_type attributes.
     """
-    converted = []
+    def __init__(self, filename: str, data: bytes, content_type: str):
+        self.filename = filename
+        self.content_type = content_type
+        self._data = data
+
+    async def read(self) -> bytes:
+        return self._data
+
+    @property
+    def file(self) -> BytesIO:
+        return BytesIO(self._data)
+
+
+async def convert_images_for_plantnet(images: List[UploadFile]) -> List[ConvertedImage]:
+    """
+    Convert uploaded images to JPEG/RGB format as required by PlantNet.
+    Returns a list of ConvertedImage instances.
+    """
+    converted_images: List[ConvertedImage] = []
+
     for image in images:
-        data = await image.read()
+        raw = await image.read()
         try:
-            img = Image.open(BytesIO(data))
+            img = Image.open(BytesIO(raw))
             if img.mode != "RGB":
                 img = img.convert("RGB")
+
             buf = BytesIO()
             img.save(buf, format="JPEG")
-            buf.seek(0)
+            jpeg_bytes = buf.getvalue()
+            new_name = f"{image.filename.rsplit('.', 1)[0]}.jpg"
 
-            # overwrite the original UploadFile
-            image.file = BytesIO(buf.getvalue())
-            image.filename = f"{image.filename.rsplit('.', 1)[0]}.jpg"
-            image.content_type = "image/jpeg"
-
-            converted.append(image)
+            converted_images.append(
+                ConvertedImage(new_name, jpeg_bytes, "image/jpeg")
+            )
 
         except Exception as e:
             raise HTTPException(
@@ -37,7 +55,8 @@ async def convert_images_for_plantnet(images: List[UploadFile]) -> List[UploadFi
                 detail=f"Failed to convert image {image.filename}: {e}"
             )
 
-    return converted
+    return converted_images
+
 
 @router.post("/", summary="Convert images for PlantNet API")
 async def convert_route(
