@@ -1,13 +1,7 @@
 {
   "version": 2,
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "app/main.py"
-    }
-  ],
   "functions": {
-    "app/main.py": {
+    "api/main.py": {
       "maxDuration": 60
     }
   }
