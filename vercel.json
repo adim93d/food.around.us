@@ -1,7 +1,7 @@
 {
   "version": 2,
   "functions": {
-    "api/main.py": {
+    "app/main.py": {
       "maxDuration": 60
     }
   }
