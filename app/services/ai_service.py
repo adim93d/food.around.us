@@ -1,3 +1,4 @@
+# app/services/ai_service.py
 import os
 import json
 import re
@@ -5,7 +6,6 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
-
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def get_plant_edibility(scientific_name: str) -> dict:
@@ -93,7 +93,6 @@ def get_detailed_plant_info(scientific_name: str) -> dict:
         )
         message = response.choices[0].message
 
-        # Handle function_call (structured JSON)
         if message.function_call:
             print("[AI] Got function_call")
             try:
@@ -103,25 +102,24 @@ def get_detailed_plant_info(scientific_name: str) -> dict:
             except Exception as e:
                 raise Exception(f"[AI] Failed to parse function_call JSON: {e}")
 
-        # Handle plain content (fallback)
         elif message.content:
             print("[AI] Got content:", message.content)
             try:
-                # Try parsing full content directly
                 return json.loads(message.content)
             except json.JSONDecodeError:
-                # Fallback: extract JSON block using regex
-                json_match = re.search(r"\{[\s\S]*\}", message.content)
+                json_match = re.search(r'\{[\s\S]*\}', message.content)
                 if not json_match:
                     raise Exception("[AI] No valid JSON block found in content.")
                 json_str = json_match.group(0)
-                arguments = json.loads(json_str)
-                print("[AI] Parsed extracted JSON:", arguments)
-                return arguments
+                try:
+                    arguments = json.loads(json_str)
+                    print("[AI] Parsed extracted JSON:", arguments)
+                    return arguments
+                except json.JSONDecodeError as je:
+                    raise Exception(f"[AI] Failed to parse extracted JSON: {je}")
             except Exception as e:
-                raise Exception(f"[AI] Could not parse message.content as JSON: {e}")
+                raise Exception(f"[AI] Unexpected error parsing content: {e}")
 
-        # Neither function_call nor content
         else:
             raise Exception("[AI] OpenAI response had no function_call and no content")
 
