@@ -34,14 +34,17 @@ def get_db():
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    print("Debug: Verifying password")
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
+    print("Debug: Getting password hash")
     return pwd_context.hash(password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    print("Debug: Creating access token")
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -53,6 +56,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 def authenticate_user(db: Session, email: str, password: str):
+    print("Debug: Authenticating user")
     user = db.query(User).filter(User.email == email).first()
     if not user:
         return False
@@ -63,6 +67,7 @@ def authenticate_user(db: Session, email: str, password: str):
 
 @router.post("/signup", response_model=UserResponse, tags=["Auth"])
 def signup(user: UserCreate, db: Session = Depends(get_db)):
+    print("Debug: Signup")
     db_user = db.query(User).filter(User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -76,6 +81,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token, tags=["Auth"])
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    print("Debug: login")
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -92,6 +98,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
 # Dependency to get the current user from the token
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    print("Debug: Getting current user")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

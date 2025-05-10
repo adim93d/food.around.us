@@ -14,6 +14,7 @@ load_dotenv()
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 def get_db():
+    print("Debug: Getting DB")
     db = SessionLocal()
     try:
         yield db
@@ -23,6 +24,7 @@ def get_db():
 # CREATE plant manually
 @router.post("/", response_model=PlantResponse, tags=["Plants"])
 def create_plant(plant: PlantCreate, db: Session = Depends(get_db)):
+    print("Debug: Creating plant")
     db_plant = db.query(Plant).filter(Plant.scientific_name == plant.scientific_name).first()
     if db_plant:
         raise HTTPException(status_code=400, detail="Plant already registered")
@@ -43,6 +45,7 @@ def create_plant(plant: PlantCreate, db: Session = Depends(get_db)):
 # READ all plants
 @router.get("/", response_model=List[PlantResponse], tags=["Plants"])
 def read_plants(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    print("Debug: Reading plants")
     plants = db.query(Plant).offset(skip).limit(limit).all()
     for plant in plants:
         plant.edible_parts = plant.edible_parts.split(",") if plant.edible_parts else []
@@ -51,6 +54,7 @@ def read_plants(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
 # READ a single plant by ID
 @router.get("/{plant_id}", response_model=PlantResponse, tags=["Plants"])
 def read_plant(plant_id: int, db: Session = Depends(get_db)):
+    print("Debug: Reading plants by id")
     plant = db.query(Plant).filter(Plant.id == plant_id).first()
     if not plant:
         raise HTTPException(status_code=404, detail="Plant not found")
@@ -60,6 +64,7 @@ def read_plant(plant_id: int, db: Session = Depends(get_db)):
 # UPDATE plant
 @router.put("/{plant_id}", response_model=PlantResponse, tags=["Plants"])
 def update_plant(plant_id: int, plant: PlantCreate, db: Session = Depends(get_db)):
+    print("Debug: Updating plant")
     db_plant = db.query(Plant).filter(Plant.id == plant_id).first()
     if not db_plant:
         raise HTTPException(status_code=404, detail="Plant not found")
@@ -76,6 +81,7 @@ def update_plant(plant_id: int, plant: PlantCreate, db: Session = Depends(get_db
 # DELETE plant
 @router.delete("/{plant_id}", tags=["Plants"])
 def delete_plant(plant_id: int, db: Session = Depends(get_db)):
+    print("Debug: Deleting plant")
     plant = db.query(Plant).filter(Plant.id == plant_id).first()
     if not plant:
         raise HTTPException(status_code=404, detail="Plant not found")

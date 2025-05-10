@@ -21,6 +21,7 @@ async def identify_plant(
         organs: Annotated[List[str], Form(...)],
         images: Annotated[List[UploadFile], File(...)]
 ):
+    print("Debug: Identifying plant")
     if not images:
         raise HTTPException(status_code=400, detail="No images provided")
 
@@ -74,6 +75,7 @@ async def get_all_info(
         organs: Annotated[List[str], Form(...)],
         images: Annotated[List[UploadFile], File(...)]
 ):
+    print("Debug: Getting all plant info")
     if not images:
         raise HTTPException(status_code=400, detail="No images provided")
 

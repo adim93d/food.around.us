@@ -28,6 +28,7 @@ async def scan_and_chain(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
+    print("Debug: Scan and chain")
     # Step 0: Convert images into PlantNet-compatible JPEGs
     converted_images = await convert_images_for_plantnet(images)
 

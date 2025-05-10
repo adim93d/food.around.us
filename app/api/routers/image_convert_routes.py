@@ -9,6 +9,7 @@ from app.api.routers.auth import get_current_user
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 class ConvertedImage:
+    print("Debug: Converting image class")
     """
     A minimal stand-in for UploadFile that holds JPEG bytes,
     plus filename and content_type attributes.
@@ -32,6 +33,7 @@ async def convert_images_for_plantnet(images: List[UploadFile]) -> List[Converte
     Returns a list of ConvertedImage instances.
     """
     converted_images: List[ConvertedImage] = []
+    print("Debug: Converting img for plantnet")
 
     for image in images:
         raw = await image.read()
@@ -62,6 +64,7 @@ async def convert_images_for_plantnet(images: List[UploadFile]) -> List[Converte
 async def convert_route(
     images: List[UploadFile] = File(...)
 ):
+    print("Debug: Convert route")
     """
     Endpoint to convert one or more images into PlantNet-compatible JPEGs.
     """
