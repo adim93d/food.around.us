@@ -57,6 +57,7 @@ async def scan_and_chain(
         edible_parts_list = edible_parts.split(",") if edible_parts else []
 
         # Step 4: Save the new plant in the database.
+        print(f"Debug: Creating plant")
         plant = add_plant(
             db,
             scientific_name,
@@ -65,11 +66,16 @@ async def scan_and_chain(
             is_edible,
             edible_parts
         )
+        print(f"Debug: plant created = {plant}")
 
     # Step 5: Associate the plant with the current user.
+    print(f"Debug: Link plant to user")
     user_plant = UserPlant(user_id=current_user.id, plant_id=plant.id)
+    print(f"Debug: link = {user_plant}")
+    print(f"Debug: Adding to db")
     db.add(user_plant)
     db.commit()
+    print(f"Debug: Added to db")
 
     # Step 6: Build and return the response.
     response_data = {
@@ -83,4 +89,5 @@ async def scan_and_chain(
             "Created at: ": plant.created_at.isoformat()
         }
     }
+    print(f"Debug: DB response = {response_data}")
     return response_data
