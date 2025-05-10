@@ -54,9 +54,13 @@ async def scan_and_chain(
         print(f"Debug - Ai response: {ai_response}")
         is_edible = ai_response.get("edible")
         print(f"Debug: is edible = {is_edible}")
-        edible_parts = ai_response.get("edible_parts")  # May be None
+        edible_parts = ai_response.get("edible_parts")  # May be None or list or comma string
         print(f"Debug: Edible parts = {edible_parts}")
-        edible_parts_list = edible_parts.split(",") if edible_parts else []
+        edible_parts_list = (
+            edible_parts if isinstance(edible_parts, list)
+            else edible_parts.split(",") if edible_parts
+            else []
+        )
         print(f"Debug: Edible parts list = {edible_parts_list}")
 
         # Step 4: Save the new plant in the database.
