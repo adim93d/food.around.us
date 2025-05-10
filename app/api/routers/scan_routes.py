@@ -51,6 +51,7 @@ async def scan_and_chain(
     else:
         # Step 3: Get detailed plant info via OpenAI
         ai_response = await run_in_threadpool(get_detailed_plant_info, scientific_name)
+        print(f"Debug - Ai response: {ai_response}")
         is_edible = ai_response.get("edible")
         edible_parts = ai_response.get("edible_parts")  # May be None
         edible_parts_list = edible_parts.split(",") if edible_parts else []
