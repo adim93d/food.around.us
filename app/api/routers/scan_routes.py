@@ -53,8 +53,11 @@ async def scan_and_chain(
         ai_response = await run_in_threadpool(get_detailed_plant_info, scientific_name)
         print(f"Debug - Ai response: {ai_response}")
         is_edible = ai_response.get("edible")
+        print(f"Debug: is edible = {is_edible}")
         edible_parts = ai_response.get("edible_parts")  # May be None
+        print(f"Debug: Edible parts = {edible_parts}")
         edible_parts_list = edible_parts.split(",") if edible_parts else []
+        print(f"Debug: Edible parts list = {edible_parts_list}")
 
         # Step 4: Save the new plant in the database.
         print(f"Debug: Creating plant")
