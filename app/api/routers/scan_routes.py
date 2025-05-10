@@ -1,3 +1,4 @@
+from doctest import debug
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from fastapi.concurrency import run_in_threadpool
@@ -15,6 +16,7 @@ from app.database.models import UserPlant
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 def get_db():
+    print("Debug: Getting DB")
     db = SessionLocal()
     try:
         yield db
@@ -45,6 +47,7 @@ async def scan_and_chain(
         )
 
     # Step 2: Look up the plant in the database.
+    print("Debug: Looking for plant in DB")
     plant = get_plant_by_scientific_name(db, scientific_name)
     if plant:
         edible_parts_list = plant.edible_parts.split(",") if plant.edible_parts else []
