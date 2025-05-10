@@ -1,6 +1,6 @@
-# app/services/ai_service.py
 import os
 import json
+import re
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -107,8 +107,16 @@ def get_detailed_plant_info(scientific_name: str) -> dict:
         elif message.content:
             print("[AI] Got content:", message.content)
             try:
-                arguments = json.loads(message.content)
-                print("[AI] Parsed content JSON:", arguments)
+                # Try parsing full content directly
+                return json.loads(message.content)
+            except json.JSONDecodeError:
+                # Fallback: extract JSON block using regex
+                json_match = re.search(r"\{[\s\S]*\}", message.content)
+                if not json_match:
+                    raise Exception("[AI] No valid JSON block found in content.")
+                json_str = json_match.group(0)
+                arguments = json.loads(json_str)
+                print("[AI] Parsed extracted JSON:", arguments)
                 return arguments
             except Exception as e:
                 raise Exception(f"[AI] Could not parse message.content as JSON: {e}")
