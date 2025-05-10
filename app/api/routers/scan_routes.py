@@ -62,16 +62,17 @@ async def scan_and_chain(
             else []
         )
         print(f"Debug: Edible parts list = {edible_parts_list}")
+        safety = ai_response.get("safety")
 
         # Step 4: Save the new plant in the database.
         print(f"Debug: Creating plant")
         plant = add_plant(
-            db,
-            scientific_name,
-            family_name,
-            common_names,
-            is_edible,
-            edible_parts
+            db=db,
+            scientific_name=scientific_name,
+            family=family_name,
+            is_edible=is_edible,
+            edible_parts=edible_parts,
+            safety=safety
         )
         print(f"Debug: plant created = {plant}")
 
