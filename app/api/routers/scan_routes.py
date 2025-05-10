@@ -34,6 +34,7 @@ async def scan_and_chain(
 
     # Step 1: Identify the plant using the PlantNet API.
     plant_info = await identify_plant(organs, converted_images)
+    print(f"Plant info: {plant_info}")
     scientific_name = plant_info.get("species_name")
     family_name = plant_info.get("family_name")
     common_names = plant_info.get("common_names")
