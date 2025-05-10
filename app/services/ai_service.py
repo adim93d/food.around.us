@@ -1,3 +1,55 @@
+# app/services/ai_service.py
+import os
+import json
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+def get_plant_edibility(scientific_name: str) -> dict:
+    prompt = (
+        f"Is the plant {scientific_name} edible? If edible, provide the response in a JSON object with the key "
+        "'is_edible'."
+    )
+
+    messages = [{"role": "user", "content": prompt}]
+
+    functions = [
+        {
+            "name": "parse_plant_info",
+            "description": "Parses plant information into a structured JSON object.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "is_edible": {
+                        "type": "boolean",
+                        "description": "True if the plant is edible, otherwise False."
+                    }
+                },
+                "required": ["is_edible"]
+            }
+        }
+    ]
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4-0613",
+            messages=messages,
+            functions=functions,
+            function_call="auto"
+        )
+        function_response = response.choices[0].message.function_call
+        if function_response:
+            arguments = json.loads(function_response.arguments)
+            return arguments.get('is_edible')
+        else:
+            raise Exception("No function call returned from the API response.")
+    except Exception as e:
+        raise Exception(f"Error when calling OpenAI API: {e}")
+
+
 def get_detailed_plant_info(scientific_name: str) -> dict:
     prompt = (
         f"Is the plant {scientific_name} edible? If edible, provide the response in a JSON object with the keys "
